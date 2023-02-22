@@ -55,7 +55,7 @@ public class MessageServer {
 
 
         public ClientHandler(Socket socket) throws IOException {
-            System.out.println("A new Client connected");
+            System.out.println(username+" has connected!");
             try {
                 this.socket = socket;
                 this.oos = new ObjectOutputStream(socket.getOutputStream());

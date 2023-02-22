@@ -14,7 +14,7 @@ public class MessageClient {
     private Socket socket;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
-    private String name;
+    private String userName;
 
 
     public MessageClient(String ipAddress, int port, String name) throws IOException {
@@ -25,26 +25,18 @@ public class MessageClient {
             this.socket = new Socket(ipAddress, port); //där den ska kopplar upp sig
             this.oos = new ObjectOutputStream(socket.getOutputStream());
             this.ois = new ObjectInputStream(socket.getInputStream());
-            this.name = name;
+            this.userName = name;
             new Listener().start();//--> körs med egen tråd (Listener ärver Thread)
-            sendMessage();
+            new Sender().start();//--> körs med egen tråd
+
         } catch (IOException e) {
             System.out.println(e);
         }
     }
 
-    public void sendMessage() throws IOException {
-        try {
-            oos.writeObject(name);
-            oos.flush();
-            Scanner scanner = new Scanner(System.in);
-            while (socket.isConnected()) {
-                String messageToSend = scanner.nextLine();
-                oos.writeObject(name + ": " + messageToSend);
-                oos.flush();
-            }
-        } catch (IOException e) {
-        }
+    public void sendMessage(String message) throws IOException {
+        oos.writeObject(userName + ": " + message);
+        oos.flush();
     }
 
     private class Listener extends Thread {
@@ -70,11 +62,29 @@ public class MessageClient {
 
     }//Listener
 
-    public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your username!");
-        String username =  scanner.nextLine();
-        MessageClient messageClient = new MessageClient("127.0.0.1", 3343, username);
+    private class Sender extends Thread {
+        public void run() {
+            Scanner scanner = new Scanner(System.in);
 
-    }//main
+            while (socket.isConnected()) {
+                try {
+                    String message = scanner.nextLine();
+                    sendMessage(message);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    //main
 }//MessageClient
+
+
