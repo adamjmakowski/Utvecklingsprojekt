@@ -10,15 +10,17 @@ public class ChatView extends JFrame{
     private JFrame frame;
     private JList<String> chatbox;
     private JList<String> contactlist;
-    private JTextArea messageTextArea;
+    private JTextArea messageInputTextArea;
+    private JTextArea messageOutputTextArea;
     private JButton sendButton;
     private JButton attachButton;
     private JButton contactListButton;
     private ImageIcon userImage;
     private ImageIcon attachImage;
-    private JScrollPane messageScrollPane;
+    private JScrollPane messageScrollPanel;
+    private JScrollPane chatBoxScrollPanel;
+    private JScrollPane contactScrollPanel;
     private Controller controller;
-    private JFrame userName;
 
     public ChatView(ImageIcon userImage, ImageIcon attachImage, Controller controller) {
         this.userImage = userImage;
@@ -34,32 +36,61 @@ public class ChatView extends JFrame{
         frame.setSize(600, 400);
 
         // Create main panel and its layout
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new GridBagLayout());
 
-        // Create top panel and add contacts and chatbox
-        JPanel topPanel = new JPanel(new BorderLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // Create top-left panel and add contacts
+        JPanel topLeftPanel = new JPanel(new BorderLayout());
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.8; // changed from 0.5
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        mainPanel.add(topLeftPanel, gbc);
 
         contactlist = new JList<>();
         JScrollPane contactlistScrollPane = new JScrollPane(contactlist);
-        topPanel.add(contactlistScrollPane, BorderLayout.WEST);
+        topLeftPanel.add(contactlistScrollPane, BorderLayout.CENTER);
 
-        chatbox = new JList<>();
-        JScrollPane userlistScrollPane = new JScrollPane(chatbox);
-        topPanel.add(userlistScrollPane, BorderLayout.EAST);
+        // Create top-right panel and add chatbox
+        JPanel topRightPanel = new JPanel(new BorderLayout());
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        mainPanel.add(topRightPanel, gbc);
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
+        messageOutputTextArea = new JTextArea(5, 5);
+        chatBoxScrollPanel = new JScrollPane(messageOutputTextArea);
+        topRightPanel.add(chatBoxScrollPanel, BorderLayout.CENTER);
 
-        // Create center panel and add user image and messageScrollPane
-        JPanel centerPanel = new JPanel(new BorderLayout());
+        // Create bottom-left panel and add user image
+        JPanel bottomLeftPanel = new JPanel(new BorderLayout());
         JLabel userLabel = new JLabel(userImage);
+        userLabel.setIcon(userImage);
+
         userLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        centerPanel.add(userLabel, BorderLayout.WEST);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.2; // changed from 0.5
+        mainPanel.add(bottomLeftPanel, gbc);
+        bottomLeftPanel.add(userLabel, BorderLayout.CENTER);
 
-        messageTextArea = new JTextArea(5, 5);
-        messageScrollPane = new JScrollPane(messageTextArea);
-        centerPanel.add(messageScrollPane, BorderLayout.CENTER);
-
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        // Create bottom-right panel and add messageScrollPane
+        JPanel bottomRightPanel = new JPanel(new BorderLayout());
+        messageInputTextArea = new JTextArea(5, 5);
+        messageScrollPanel = new JScrollPane(messageInputTextArea);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        mainPanel.add(bottomRightPanel, gbc);
+        bottomRightPanel.add(messageScrollPanel, BorderLayout.CENTER);
 
         // Create bottom panel and add sendButton and attachButton
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -77,11 +108,20 @@ public class ChatView extends JFrame{
         bottomPanel.add(contactListButton);
         contactButtonListener();
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 2;
+        gbc.weighty = 0.0; // changed from 0.5
+        mainPanel.add(bottomPanel, gbc);
 
         frame.add(mainPanel);
         frame.setVisible(true);
+
     }
+
+
+
 
 
     public void addContactListListener(MouseListener listener) {
@@ -103,11 +143,11 @@ public class ChatView extends JFrame{
 
 
     public String getMessageText() {
-        return messageTextArea.getText();
+        return messageInputTextArea.getText();
     }
 
     public void clearMessageText() {
-        messageTextArea.setText("");
+        messageInputTextArea.setText("");
     }
 
     public File showFileOpenDialog() {
@@ -130,6 +170,7 @@ public class ChatView extends JFrame{
                     controller.setAttachment(selectedFile);
                     controller.handleAttachment();
 
+
                 }
             }
         });
@@ -145,17 +186,17 @@ public class ChatView extends JFrame{
     }
 
     public String usernameInput(){
-        userName = new JFrame();
-        String Name =JOptionPane.showInputDialog(userName,"Enter Username:");
-        return Name;
+        return JOptionPane.showInputDialog(frame,"Enter Username:");
     }
+
 
     public void sendButtonListener(){
         sendButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.setMessage(messageTextArea.getText());
+                controller.setMessage(messageInputTextArea.getText());
+                addMessage(messageInputTextArea.getText());
                 try {
                     controller.handleMessage();
                 } catch (IOException ex) {
@@ -169,8 +210,8 @@ public class ChatView extends JFrame{
 
 
     public <Message> void addMessage(Message message) {
-        messageTextArea.append(message.toString() + "\n");
-        messageScrollPane.getVerticalScrollBar().setValue(messageScrollPane.getVerticalScrollBar().getMaximum());
+        messageInputTextArea.append(message.toString() + "\n");
+        chatBoxScrollPanel.getVerticalScrollBar().setValue(chatBoxScrollPanel.getVerticalScrollBar().getMaximum());
     }
 
     public JList<String> getContactlist() {

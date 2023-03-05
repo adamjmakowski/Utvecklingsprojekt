@@ -19,10 +19,12 @@ public class Controller {
     private String Message;
     private String userName;
 
-    public Controller() throws IOException, ClassNotFoundException {
+    public Controller() throws IOException {
         // Create views
-        chatView = new ChatView(new ImageIcon("Images/test.png"), new ImageIcon("Images/test.png"), this);
+
+        chatView = new ChatView(new ImageIcon("Utvecklingsprojekt/Images/test.png"), new ImageIcon("Utvecklingsprojekt/Images/test.png"), this);
         contactListView = new ContactListView(contactlist);
+
 
         // Create message client and server
         userName = chatView.usernameInput();
