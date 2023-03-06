@@ -1,3 +1,5 @@
+
+
 package View;
 import Controller.*;
 import javax.swing.*;
@@ -171,78 +173,71 @@ public class ChatView extends JFrame{
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            return selectedFile;
+            return fileChooser.getSelectedFile();
         }
         return null;
     }
 
     public void deleteButtonListener() {
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = contactlist.getSelectedIndex();
-                if (index >= 0) {
-                    //contactlist.removeSelectedItem(index);
-                }
+        deleteButton.addActionListener(e -> {
+            int index = contactlist.getSelectedIndex();
+            if (index >= 0) {
+                //contactlist.removeSelectedItem(index);
             }
         });
     }
 
     public void attachButtonListener(){
-        attachButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File selectedFile = showFileOpenDialog();
-                if (selectedFile != null) {
-                    controller.setAttachment(selectedFile);
-                    controller.handleAttachment();
+        attachButton.addActionListener(e -> {
+            File selectedFile = showFileOpenDialog();
+            if (selectedFile != null) {
+                controller.setAttachment(selectedFile);
+                controller.handleAttachment();
 
 
-                }
             }
         });
     }
 
     public void contactButtonListener(){
-        contactListButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.handleContact();
-            }
-        });
+        contactListButton.addActionListener(e -> controller.handleContact());
     }
 
     public String usernameInput(){
-        return JOptionPane.showInputDialog(frame,"Enter Username:");
+        return JOptionPane.showInputDialog(frame,"Please Enter Username:","Username Input",JOptionPane.QUESTION_MESSAGE);
     }
 
 
-    public void sendButtonListener(){
-        sendButton.addActionListener(new ActionListener() {
+    public void sendButtonListener() {
+        sendButton.addActionListener(e -> sendMessage());
 
+        messageInputTextArea.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try {
-
-                    if(!Objects.equals(messageInputTextArea.getText(), "")) {
-                        messageOutputTextArea.append(messageInputTextArea.getText() + "\n");
-                        messageOutputTextArea.setCaretPosition(messageOutputTextArea.getDocument().getLength());
-
-                        controller.setMessage(messageInputTextArea.getText());
-                        addMessage(messageInputTextArea.getText());
-                        messageInputTextArea.setText("");
-
-                        controller.handleMessage();
-                    }
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage();
                 }
             }
         });
     }
+
+    private void sendMessage() {
+        try {
+            if (!Objects.equals(getMessageText(), "")) {
+                messageOutputTextArea.append(getMessageText() + "\n");
+                messageOutputTextArea.setCaretPosition(messageOutputTextArea.getDocument().getLength());
+
+                controller.setMessage(messageInputTextArea.getText());
+                addMessage(getMessageText());
+                clearMessageText();
+
+                controller.handleMessage();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 
 
 

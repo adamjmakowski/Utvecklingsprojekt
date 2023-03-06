@@ -38,9 +38,6 @@ public class Controller {
 
         // Add contact list to chat view
         chatView.setContactList(contactlist);
-
-        // Show initial view
-        chatView.setVisible(true);
     }
 
 
