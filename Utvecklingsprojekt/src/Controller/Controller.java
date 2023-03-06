@@ -32,8 +32,6 @@ public class Controller {
 
         // Add listeners to views
         contactListView.addAddButtonListener(new AddButtonListener());
-        contactListView.addDeleteButtonListener(new DeleteButtonListener());
-
 
         // Set initial contact list
         contactListView.setContactList(contactlist);
@@ -44,6 +42,7 @@ public class Controller {
         // Show initial view
         chatView.setVisible(true);
     }
+
 
 
     public void handleAttachment(){
@@ -60,6 +59,8 @@ public class Controller {
         contactListView.setVisible(true);
         System.out.println("contactlist");
     }
+
+
 
     private class AddButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -79,6 +80,8 @@ public class Controller {
         }
     }
 
+    public String [] getContactList() {return contactlist;}
+
     public File getAttachment() {
         return attachment;
     }
@@ -95,7 +98,7 @@ public class Controller {
         Message = message;
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
     }
 }

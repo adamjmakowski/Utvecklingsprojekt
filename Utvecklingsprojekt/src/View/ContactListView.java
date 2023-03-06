@@ -8,7 +8,6 @@ public class ContactListView extends JFrame {
     private JPanel panel;
     private JList<String> contactList;
     private JButton addButton;
-    private JButton deleteButton;
 
     public ContactListView(String[] contacts) {
         setTitle("Contacts");
@@ -27,11 +26,7 @@ public class ContactListView extends JFrame {
 
         // Create add button and add it to panel
         addButton = new JButton("Add");
-        panel.add(addButton, BorderLayout.WEST);
-
-        // Create delete button and add it to panel
-        deleteButton = new JButton("Delete");
-        panel.add(deleteButton, BorderLayout.EAST);
+        panel.add(addButton, BorderLayout.SOUTH);
 
         // Add panel to frame
         add(panel);
@@ -41,10 +36,6 @@ public class ContactListView extends JFrame {
         addButton.addActionListener(listener);
     }
 
-    public void addDeleteButtonListener(ActionListener listener) {
-        deleteButton.addActionListener(listener);
-    }
-
     public void setContactList(String[] contacts) {
         contactList.setListData(contacts);
     }
@@ -52,5 +43,4 @@ public class ContactListView extends JFrame {
     public int getSelectedContactIndex() {
         return contactList.getSelectedIndex();
     }
-
 }

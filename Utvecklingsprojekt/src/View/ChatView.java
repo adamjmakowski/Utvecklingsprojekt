@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ChatView extends JFrame{
     private JFrame frame;
@@ -15,6 +16,7 @@ public class ChatView extends JFrame{
     private JButton sendButton;
     private JButton attachButton;
     private JButton contactListButton;
+    private JButton deleteButton;
     private ImageIcon userImage;
     private ImageIcon attachImage;
     private JScrollPane messageScrollPanel;
@@ -33,7 +35,8 @@ public class ChatView extends JFrame{
         // Set up frame
         frame = new JFrame("Chat Room");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null); // center the frame on the screen
 
         // Create main panel and its layout
         JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -63,7 +66,8 @@ public class ChatView extends JFrame{
         gbc.gridwidth = 1;
         mainPanel.add(topRightPanel, gbc);
 
-        messageOutputTextArea = new JTextArea(5, 5);
+        messageOutputTextArea = new JTextArea(10, 40);
+        messageOutputTextArea.setEditable(false); // disable editing
         chatBoxScrollPanel = new JScrollPane(messageOutputTextArea);
         topRightPanel.add(chatBoxScrollPanel, BorderLayout.CENTER);
 
@@ -107,6 +111,18 @@ public class ChatView extends JFrame{
         contactListButton = new JButton("Contacts");
         bottomPanel.add(contactListButton);
         contactButtonListener();
+
+        deleteButton = new JButton("Delete");
+        bottomPanel.add(deleteButton);
+        deleteButtonListener();
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.0;
+        gbc.anchor = GridBagConstraints.WEST; // align button to the left
+        mainPanel.add(deleteButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -161,6 +177,18 @@ public class ChatView extends JFrame{
         return null;
     }
 
+    public void deleteButtonListener() {
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = contactlist.getSelectedIndex();
+                if (index >= 0) {
+                    //contactlist.removeSelectedItem(index);
+                }
+            }
+        });
+    }
+
     public void attachButtonListener(){
         attachButton.addActionListener(new ActionListener() {
             @Override
@@ -195,10 +223,20 @@ public class ChatView extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.setMessage(messageInputTextArea.getText());
-                addMessage(messageInputTextArea.getText());
+
                 try {
-                    controller.handleMessage();
+
+                    if(!Objects.equals(messageInputTextArea.getText(), "")) {
+                        messageOutputTextArea.append(messageInputTextArea.getText() + "\n");
+                        messageOutputTextArea.setCaretPosition(messageOutputTextArea.getDocument().getLength());
+
+                        controller.setMessage(messageInputTextArea.getText());
+                        addMessage(messageInputTextArea.getText());
+                        messageInputTextArea.setText("");
+
+                        controller.handleMessage();
+                    }
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
