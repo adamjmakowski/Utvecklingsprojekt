@@ -89,7 +89,7 @@ public class ChatView extends JFrame{
 
         // Create bottom-right panel and add messageScrollPane
         JPanel bottomRightPanel = new JPanel(new BorderLayout());
-        messageInputTextArea = new JTextArea(5, 5);
+        messageInputTextArea = new JTextArea(2, 5);
         messageScrollPanel = new JScrollPane(messageInputTextArea);
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -227,7 +227,7 @@ public class ChatView extends JFrame{
                 messageOutputTextArea.append(getMessageText() + "\n");
                 messageOutputTextArea.setCaretPosition(messageOutputTextArea.getDocument().getLength());
 
-                controller.setMessage(messageInputTextArea.getText());
+                //controller.setMessage(messageInputTextArea.getText());
                 addMessage(getMessageText());
                 clearMessageText();
 
@@ -254,6 +254,11 @@ public class ChatView extends JFrame{
     public void setContactList(String[] usernames) {
         contactlist.setListData(usernames);
     }
+
+    public ImageIcon getProfilePicture() {
+        return userImage;
+    }
+
 
 
 }
