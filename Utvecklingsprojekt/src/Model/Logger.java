@@ -1,5 +1,4 @@
 package Model;
-import Controller.*;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -21,7 +20,7 @@ public class Logger
 
     public void Log( String line )
     {
-        String time = java.time.LocalDateTime.now().withNano( 0 ).toString();
+        String time = LocalDateTime.now().withNano( 0 ).toString();
         String output = time + "\t " + line + "\n";
         new Thread( new LoggerWrite( filename, output ) ).start();
     }
@@ -39,15 +38,15 @@ public class Logger
         Log( line );
     }
 
-    public void LogConnect( String username, String address )
+    public void LogConnect( String username)
     {
-        String line = username + " (" + address + ") connected to the server.";
+        String line = username + "  connected to the server.";
         Log( line );
     }
 
-    public void LogDisconnect( String username, String address )
+    public void LogDisconnect( String username )
     {
-        String line = username + " (" + address + ") disconnected from the server.";
+        String line = username + " disconnected from the server.";
         Log( line );
     }
 

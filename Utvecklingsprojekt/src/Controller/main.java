@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public class main {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Controller controller = new Controller();
+        ClientController controller = new ClientController("127.0.0.1",1234);
     }
 }

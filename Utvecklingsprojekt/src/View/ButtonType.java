@@ -1,4 +1,4 @@
-package Model;
+package View;
 
 public enum ButtonType {
     Connect,
