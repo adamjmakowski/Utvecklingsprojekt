@@ -8,6 +8,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Denna klass är en flertrådad Server som implements {@link Runnable där varje uppkopplad klient ska hanteras av en egen tråd.
+ * För att kunna upprätthålla uppkopplingar med klienter och samtidigt lyssna på nya uppkopplingar måste dessa två processer parallelliseras med hjälp av trådar.
+ * Därför att denna klass har en ClientHandler, som är en inre klass som körs med egna tråd genom att ärva Thread.
+ */
 public class MessageServer implements Runnable {
     private int port;
     private Clients clients;
@@ -26,6 +31,13 @@ public class MessageServer implements Runnable {
         logger.CreateLoggerGUI();
         new Thread(this).start();
     }
+
+    /**
+     * en run()-metod där den väntar på uppkopplingar av klienter (serverSocket.accept()).
+     * Vid uppkoppling av en klient skapas en instans av en ClientHandler som hanterar
+     * uppkopplingen med just den klienten. Detta sker genom att ServerSocket med
+     * förbindelsen används som parameter när en ny ClientHandler skapas
+     */
     @Override
     public void run() {
         System.out.println("Server started");
@@ -51,13 +63,22 @@ public class MessageServer implements Runnable {
         users.remove(user);
     }
 
+    /**
+     * En inre klass som ärver {@link Thread
+     * I den inre klassen lyssnar servern på inkommande uppkopplingar från klienter (serverSocket.accept())
+     */
+
     public class ClientHandler extends Thread {
         private Socket socket;
         private User user; //den användare som just kopplat upp sig
         private ObjectInputStream ois;
         private ObjectOutputStream oos;
 
-
+        /**
+         * En Konstruktor som har ServerSocket som parameter och skapar respektive Input- och OutputStream.
+         * @param socket en instansvariabel av {@link Socket för att hämta ut streams från servern
+         * @throws IOException
+         */
 
         public ClientHandler(Socket socket) throws IOException {
             System.out.println("A new Client connected");
@@ -66,6 +87,10 @@ public class MessageServer implements Runnable {
             this.ois = new ObjectInputStream(socket.getInputStream());//Vid uppkoppling skapas ObjectInputStream som kopplas till server-sockets InputStream
         }
 
+        /**
+         * En run()-metod som skriver ut meddelanden genom oos.writeObject.
+         * klienten ska vara uppkopplad mot servern genom hela exekveringen av programmet.
+         */
         @Override
         public void run() { //väntar för meddelande från den uppkopplade client--> skickar den till andra clients.
             System.out.println("ClientHandler run starting...");
@@ -107,7 +132,7 @@ public class MessageServer implements Runnable {
                             break;
                         }
                     } else if (obj instanceof Message) {
-                        ((Message) obj).setReceived();
+                        ((Message) obj).setDelivered();
                         deliverMessage((Message) obj);
                     }
                 }//while-loopen
@@ -171,7 +196,7 @@ public class MessageServer implements Runnable {
                     if (u.equals(receiver)) {
                         try {
                             clients.get(u).getOos().writeObject(message);
-                            message.setDelivered();
+                            message.setReceived();
                             logger.LogMessage(message);
                         } catch (IOException e) {
                             e.printStackTrace();

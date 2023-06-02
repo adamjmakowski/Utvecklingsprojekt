@@ -3,6 +3,11 @@ package Model;
 import java.io.*;
 import java.util.ArrayList;
 
+//Denna klass används av Client.
+//Klienten lägger till en uppkopplad användare till Kontakter.
+//Klassen sparar Kontakter på hårddisken då klienten avslutas.
+//Mottagare kan väljas dels från sparade kontakter och dels från uppkopplade användare.
+
 public class Contacts {//that store the user's online and saved contacts, respectively.
     private ArrayList<User> onlineContacts;
     private ArrayList<User> savedContacts;

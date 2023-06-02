@@ -10,6 +10,13 @@ import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.ArrayList;
 
+/**
+ * All kommunikation mellan modell klasserna och view klasserna sker via denna klassen.
+ * Klient ansluter sig till systemet, skicka meddelande, ta emot meddelande och se anslutna användare.
+ * Denna klass kopplar upp sig mot {@link MessageServer med hjälp av socket.
+ * Den har en inre klass {@link ListenToServer som körs med egen tråd (ärver {@link Thread)
+ */
+
 public class ClientController {
     private ClientView gui;
     private Socket socket;
@@ -21,6 +28,15 @@ public class ClientController {
     private Contacts contacts;
     private ContactsView contactsView;
     private ArrayList<User> receiverList = new ArrayList<>();
+
+
+/**
+ * Klassens Konstruktor som skapar ett klient som kopplar upp sig mot servern genom socket.
+ * Här startar ett tråd (med hjälp av den inre klass {@link ListenToServer) för att lyssna för meddelande från {@link MessageServer
+ * @param ipAddress String som socket behöver för att client ska kunna koppla upp sig mot servern
+ * @param port en int som presenterar vilken port servern ska köras på.
+ * @throws IOException
+ */
 
     public ClientController(String address, int port) {
         this.address = address;
@@ -123,6 +139,7 @@ public class ClientController {
     private void sendUserToServer(User user) {
         try {
             oos.writeObject(user);
+            oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,6 +147,7 @@ public class ClientController {
     private void sendMessage(Message message) {
         try {
             oos.writeObject(message);
+            oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -159,7 +177,7 @@ public class ClientController {
         return username;
     }
 
-    //is an inner class called ListenToServer that extends Thread and listens to incoming messages from the server.
+    //is an inner class that extends Thread and listens to incoming messages from the server.
     // If the incoming message is a Model.User object,
     // it either adds the user to the list of online contacts or removes the user from the list of online contacts.
     // If the incoming message is a Message object, it displays the message in the chat box.
